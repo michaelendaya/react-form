@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Card, Tab, Tabs, TextField, Typography } from "@mui/material"
 import { Box } from "@mui/system";
 import { styled } from '@mui/system';
@@ -82,58 +82,94 @@ const UserForm = (props) => {
   font-family: IBM Plex Sans, sans-serif;
   font-size: 0.875rem;
 `;
-  const [user, setUser] = useState(null)
-  const userLogin = (data) => {
-    console.log(user)
-    setUser(data)
+  const [login, setLogin] = useState(null)
+  const [invalid, setInvalid] = useState(false)
+  const [accounts, setAccounts] = useState([{ id_number: 'admin', password: 'admin' }])
+  useEffect(() => {
+    console.log(accounts);
+  }, [accounts, login]);
 
+  const userLogin = (data) => {
+    console.log(data.id_number, data.password);
+    const userData = accounts.find((user) => user.id_number === data.id_number);
+    console.log(userData);
+    if (userData) {
+      if (userData.password !== data.password) {
+        setInvalid(true)
+      }
+      else {
+        console.log(userData)
+        setLogin(userData)
+      }
+    }
+    else{
+      setInvalid(true)
+    }
   };
-  console.log(user);
-  if (user) {
+  const userCreate = (data) => {
+    const user = {
+      id_number: data.id_number,
+      password: data.password,
+      name: `${data.first_name} ${data.second_name} ${data.last_name}`,
+      gender: data.gender,
+      college: data.college,
+      program: data.program,
+      level: data.level,
+    }
+    setAccounts(prevArray => [...prevArray, user])
+    
+    setLogin(
+      user
+    )
+
+  }
+
+
+  if (login) {
+    console.log(login)
     return (
       <Card variant="outlined" sx={{ width: 410, padding: 2 }
       }>
         <img className="image" src="https://www.ust.edu.ph/wp-content/uploads/2019/07/ponti-royal-ust-1024x316.png" />
-        <div>Hello, {user.id_number}</div>
-        {
-          user.first_name
-          &&
-          <>
-            <Box>
-              <Typography sx={{ fontWeight: 'bold', display: 'inline' }}>Name:</Typography> {user.first_name} {user.last_name}
-            </Box>
-            <Box>
-              <Typography sx={{ fontWeight: 'bold', display: 'inline' }}>Gender:</Typography> {user.gender}
-            </Box>
-            <Box>
-              <Typography sx={{ fontWeight: 'bold', display: 'inline' }}>College:</Typography> {user.college}
-            </Box>
-            <Box>
-              <Typography sx={{ fontWeight: 'bold', display: 'inline' }}>Program-Year Level:</Typography> {user.program}  {user.level}
-            </Box>
-          </>
-        }
-        <Button variant="contained" fullWidth type="submit" sx={{ marginTop: 2 }} onClick={() => setUser(null)}>Logout</Button>
+        <div>Hello, {login.name} </div>
+        <Box>
+          <Typography sx={{ fontWeight: 'bold', display: 'inline' }}>Id Number:</Typography> {login.id_number} 
+        </Box>
+        <Box>
+          <Typography sx={{ fontWeight: 'bold', display: 'inline' }}>Gender:</Typography> {login.gender}
+        </Box>
+        <Box>
+          <Typography sx={{ fontWeight: 'bold', display: 'inline' }}>College:</Typography> {login.college}
+        </Box>
+        <Box>
+          <Typography sx={{ fontWeight: 'bold', display: 'inline' }}>Program:</Typography> {login.program}
+        </Box>
+        <Box>
+          <Typography sx={{ fontWeight: 'bold', display: 'inline' }}>Year Level:</Typography> {login.level}
+        </Box>
+
+
+        <Button variant="contained" fullWidth type="submit" sx={{ marginTop: 2 }} onClick={() => setLogin(null)}>Logout</Button>
       </Card >
     )
   }
   return (
-    <Card variant="outlined" sx={{ width: 410, padding: 2, display: 'flex', paddingBottom:4, justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+    <Card variant="outlined" sx={{ width: 410, padding: 2, display: 'flex', paddingBottom: 4, justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
       <img className="image" src="https://www.ust.edu.ph/wp-content/uploads/2019/07/ponti-royal-ust-1024x316.png" />
       <TabsUnstyled defaultValue={0} >
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <TabsList>
-          <Tab>Sign In</Tab>
-          <Tab>Sign Up</Tab>
-        </TabsList>
-      </Box >
-      <TabPanel value={0}>
-        <SignInForm signIn={userLogin} />
-      </TabPanel>
-      <TabPanel value={1}>
-        <SignUpForm handleSubmit={userLogin} />
-      </TabPanel>
-    </TabsUnstyled>
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <TabsList>
+            <Tab>Sign In</Tab>
+            <Tab>Sign Up</Tab>
+          </TabsList>
+        </Box >
+        <TabPanel value={0}>
+          <SignInForm signIn={userLogin} invalid={invalid} />
+        </TabPanel>
+        <TabPanel value={1}>
+          <SignUpForm handleSubmit={userCreate} />
+        </TabPanel>
+      </TabsUnstyled>
     </Card >
   )
 }

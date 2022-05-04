@@ -8,7 +8,7 @@ const steps = [
 ];
 
 function Credentials(props) {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors }, watch } = useForm();
     return (
         <form onSubmit={handleSubmit(props.handleNext)}>
             <TextField fullWidth label="Student ID Number" {...register("id_number",
@@ -39,6 +39,22 @@ function Credentials(props) {
             <Typography variant="caption" display="block" gutterBottom sx={{ marginTop: '-5px', color: 'red' }}>
                 {errors.password?.type === 'minLength' && "Password must be at least 8 character"}
             </Typography>
+            <TextField fullWidth label="Confirm Password" variant="outlined" sx={{ marginBottom: 1 }} type="password"  {...register("c_password", {
+                required: "Please confirm your password",
+                validate: (val) => {
+                    if (watch('password') != val) {
+                        return "Your passwords do no match";
+                    }
+                },
+            })} />
+            <Typography variant="caption" display="block" gutterBottom sx={{ marginTop: '-5px', color: 'red' }}>
+                {errors.c_password?.type === 'validate' && "Password does not match"}
+            </Typography>
+            <Typography variant="caption" display="block" gutterBottom sx={{ marginTop: '-5px', color: 'red' }}>
+                {errors.c_password?.type === 'required' && "Please confrim your password"}
+            </Typography>
+
+
             <Button variant="contained" fullWidth type="submit">Next</Button>
         </form>
     )
