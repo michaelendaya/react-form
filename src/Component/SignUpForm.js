@@ -30,10 +30,24 @@ function Credentials(props) {
                 required: "Please enter your password", minLength: {
                     value: 8,
                     message: "Password must be at least 8 characters"
+                },
+                validate: {
+                    hasNumber: (value) => /^(?=.{6,20}$)\D*\d/.test(value),
+                    hasCharacter: (value) => /\W|_/g.test(value),
+                    hasUpper: (value) => /(?=.*?[A-Z])/.test(value),
                 }
             })} />
             <Typography variant="caption" display="block" gutterBottom sx={{ marginTop: '-5px', color: 'red' }}>
                 {errors.password?.type === 'required' && "Please enter your password"}
+            </Typography>
+            <Typography variant="caption" display="block" gutterBottom sx={{ marginTop: '-5px', color: 'red' }}>
+                {errors.password && errors.password.type === 'hasNumber' && "Must have numbers"}
+            </Typography>
+            <Typography variant="caption" display="block" gutterBottom sx={{ marginTop: '-5px', color: 'red' }}>
+                {errors.password && errors.password.type === 'hasUpper' && "Must have uppercase"}
+            </Typography>
+            <Typography variant="caption" display="block" gutterBottom sx={{ marginTop: '-5px', color: 'red' }}>
+                {errors.password && errors.password.type === 'hasCharacter' && "Must have special chracter"}
             </Typography>
 
             <Typography variant="caption" display="block" gutterBottom sx={{ marginTop: '-5px', color: 'red' }}>
